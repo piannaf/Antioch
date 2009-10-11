@@ -150,6 +150,12 @@ class MenuBar:
         """
         pass
         
+    def getList(self):
+        items = []
+        for item in self._menuItems:
+            items.append(item)
+        return items
+        
     # methods for File Menu
     def newProject(self):
         pass
