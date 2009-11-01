@@ -30,6 +30,7 @@ class SideBar(Frame):
         self._compAttrFrame.resize(self._width)
         
 class LibraryFrame(LabelFrame):
+    """ A place to put loaded library information """
     def __init__(self, master, **options):
         LabelFrame.__init__(self, master, **options)
         self.pack(fill = Y, expand = 1)
@@ -42,6 +43,7 @@ class LibraryFrame(LabelFrame):
         self._body['width'] = newWidth
         
 class CompAttrFrame(LabelFrame):
+    """ A place to put selected component attribute information. """
     def __init__(self, master, **options):
         LabelFrame.__init__(self, master, **options)
         self.pack(fill = Y, expand = 1)

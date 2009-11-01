@@ -30,13 +30,16 @@ class ToolBar(Frame):
         i = 2
         for button in self._buttons:
             TBButton(self, text = button.get('text'),
-                image = button.get('image')).grid(row = 0, column = i, padx = 1)
+                image = button.get('image'),
+                command = button.get('command')).grid(row = 0, column = i, padx = 1)
             i += 1
 
     def setLabel(self, label):
+        """ set the label of the toolbar """
         self._label = Label(self, text = label)
         
     def getLabel(self):
+        """ Get the label of the toolbar """
         return self._label
 
     def toggleLabel(self):
@@ -53,13 +56,16 @@ class ToolBar(Frame):
                 self.toggleLabel()
 
     def setButtons(self, buttons):
+        """ Save a list of buttons for use in the toolbar """
         for button in buttons:
             self._buttons.append(button)
     
     def do_popup(self, event):
-        """Modified from http://effbot.org/zone/tkinter-popup-menu.htm"""
+        """Event handler for <Button-3>. 
+        Modified from http://effbot.org/zone/tkinter-popup-menu.htm
+        """
         # create a menu
-        popup = Menu(root, tearoff=0)
+        popup = Menu(self, tearoff=0)
         popup.add_command(label="Toggle Label", command = self.toggleLabel)
         popup.add_separator()
         popup.add_command(label="Move Right", command = self._moveRight)
@@ -76,14 +82,18 @@ class ToolBar(Frame):
             popup.grab_release()
             
     def _moveRight(self):
+        """ Called when you want to move the toolbar to the right"""
         self._container.moveTB(self, 'right')
         self._container.render()
         
     def _moveLeft(self):
+        """ Called when you want to move the toolbar to the left"""
         self._container.moveTB(self, 'left')
         self._container.render()        
         
     def _tearOff(self):
+        """ Remove the toolbar from the main application window and put it in
+        its own toplevel window. """
         self._remove()
         top = Toplevel()
         top.title(self.getLabel()['text'])
@@ -98,6 +108,7 @@ class ToolBar(Frame):
         tb._handle.grid_remove()
         
     def _remove(self):
+        """ Removes the toolbar from its container """
         self._container._popup.invoke(self._label['text'])
         
     def render(self, col = 0):
@@ -132,7 +143,6 @@ class TBContainer(Frame):
     """Sets up a container for toolbar widgets"""
     def __init__(self, master, topMenu):
         Frame.__init__(self, master, bd = 2, relief = GROOVE, bg = 'green')
-        self.pack(fill = BOTH, expand = 1)
         
         # a list of tuples consiting of the toolbar label and the toolbar object
         # self._tbList is a list of all currently rendered toolbars
@@ -141,15 +151,15 @@ class TBContainer(Frame):
         self._tbMasterList = []
         
         # pop up menu
-        self._popup = Menu(root, tearoff=0)
+        self._popup = Menu(self, tearoff=0)
         self.bind('<Button-3>', self.do_popup)
         self._topMenu = topMenu
         self._initPopup()
         
         # always initialize the standard toolbar
         tb3 = ToolBar(self)
-        tb3.setButtons([{'text': "And"}, {'text': "then"}, {'text': "there"},
-                    {'text': "were"}, {'text': "three"}])
+        tb3.setButtons([{'text': "Input"}, {'text': "Output"}, {'text': "NOT"},
+                    {'text': "AND"}, {'text': "OR"}])
         tb3.setLabel('Standard')
         tb3.toggleLabel()
         self.addTB(tb3)
@@ -161,7 +171,8 @@ class TBContainer(Frame):
         for tb in tblist:
             self._tbList.append(tb.getLabel()['text'], tb)
         
-    def removeTB(self, tb):        
+    def removeTB(self, tb):
+        """ Remove the given toolbar from sight and the toolbar list """
         # the grid geometry manager needs to forget about this widget or else it
         # will put it back in whenever it can even if we never render it
         # explicitly. 
@@ -170,6 +181,7 @@ class TBContainer(Frame):
         self.render()
         
     def addTB(self, tb):
+        """ Add a toolbar to the list """
         tb_tuple = (tb.getLabel()['text'], tb)
         if tb_tuple not in self._tbMasterList:
             self._tbMasterList.append(tb_tuple)
@@ -216,7 +228,8 @@ class TBContainer(Frame):
                 for button in item[1]:
                     if isinstance(button, dict) and button.get('label'):
                         tbButtons.append({'text': button.get('label'), 
-                                          'icon': button.get('icon')})
+                                          'icon': button.get('icon'),
+                                          'command': button.get('command')})
                 tb.setButtons(tbButtons)
                 tb.setLabel(item[0])
                 tb.toggleLabel()
@@ -224,7 +237,9 @@ class TBContainer(Frame):
             
     
     def do_popup(self, event):
-        """Modified from http://effbot.org/zone/tkinter-popup-menu.htm"""
+        """Event handler for <Button-3>. 
+        Modified from http://effbot.org/zone/tkinter-popup-menu.htm
+        """
         # display the popup menu
         try:
             self._popup.tk_popup(event.x_root, event.y_root, 0)
@@ -233,6 +248,7 @@ class TBContainer(Frame):
             self._popup.grab_release()
     
     def _toggleTB(self , e):
+        """Used by the popup menu to remove or add a toolbar to the container"""
         found = False
         for tb in self._tbList:
             if e == tb[0]:
@@ -259,6 +275,7 @@ def test(master):
     master.geometry("800x600")
     testMenu = AntiochMenus.MenuBar(master)
     tbContainer = TBContainer(master, testMenu)
+    tbContainer.pack(fill = BOTH, expand = 1)
 
     tb1 = ToolBar(tbContainer)
     tb2 = ToolBar(tbContainer)

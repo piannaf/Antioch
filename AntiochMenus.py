@@ -11,6 +11,7 @@ class MenuBar:
         self._currentMenu = [Menu(master)]
         
         master.config(menu=self._currentMenu[-1])
+        self._master = master
 
         # code menu datastructure. Useful for using this data to create other
         # menus and toolbars
@@ -130,6 +131,7 @@ class MenuBar:
         """ A private method for retrieving the index of a cascading menu with 
         the given label.
         """
+        pass
         
     def add(self, item, root):
         """ A method for adding a single sub-item to a given menu.
@@ -151,6 +153,7 @@ class MenuBar:
         pass
         
     def getList(self):
+        """ Returns a list of all top-level menu items """
         items = []
         for item in self._menuItems:
             items.append(item)
@@ -170,7 +173,8 @@ class MenuBar:
     def printProject(self):
         pass
     def quit(self):
-        root.destroy()
+        """Quits the main program"""
+        self._master.destroy()
 
     # methods for Edit Menu
     def undo(self):
